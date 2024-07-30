@@ -163,6 +163,8 @@ local ForceAwakenTab = Window:MakeTab({
     BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
 })
 
+ForceAwakenTab:AddLabel("only forces players that has full awaken")
+
 -- Force Awaken button
 ForceAwakenTab:AddButton({
     Name = "Activate Force Awaken",
