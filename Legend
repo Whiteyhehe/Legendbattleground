@@ -7,6 +7,22 @@ local UserInputService = game:GetService("UserInputService")
 -- Check if the platform is mobile
 local isMobile = UserInputService.TouchEnabled
 
+local whitelist = {
+    ["whitey_plays"] = true,  -- Example username
+    ["ExampleUsername2"] = true   -- Example username
+    -- Add more usernames as needed
+}
+
+-- Get the local player
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+-- Check if the local player is whitelisted
+if not whitelist[localPlayer.Name] then
+    localPlayer:Kick("You are not whitelisted to use this script.")
+    return
+end
+
 -- Create a customizable GUI window
 local Window = OrionLib:MakeWindow({
     Name = "Legend Battlegrounds - Made by SynosLucky",
