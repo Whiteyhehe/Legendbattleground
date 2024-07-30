@@ -7,27 +7,27 @@ local UserInputService = game:GetService("UserInputService")
 -- Check if the platform is mobile
 local isMobile = UserInputService.TouchEnabled
 
--- Create a customizable GUI window with a background image
+-- Create a customizable GUI window
 local Window = OrionLib:MakeWindow({
-    Name = "Battleground",
+    Name = "Legend Battlegrounds - Made by SynosLucky",
     HidePremium = false,
     IntroEnabled = false,
-    IntroText = "Welcome to Battleground Script!",
+    IntroText = "Welcome to Legend Battlegrounds Script!",
     SaveConfig = true,
-    ConfigFolder = "BattlegroundScript",
+    ConfigFolder = "LegendBattlegroundsScript",
     Drag = not isMobile,  -- Disable dragging on mobile devices
     Transparency = 0.6  -- Set transparency to 60%
 })
 
--- Track state of Force actions
+-- Track state of actions
 local forceState = {
     ForcePunch = false,
-    ForceDragonRush = false,
-    ForceTigerPalm = false,
-    ForcePantherCombo = false,
-    ForceTripleKickCounter = false,
     ForceBlock = false,
-    ForceFrontDash = false
+    ForceAwaken = false,
+    ForceRightDash = false,
+    ForceLeftDash = false,
+    ForceForwardDash = false,
+    ForceBackDash = false
 }
 
 -- Function to notify the user
@@ -40,25 +40,27 @@ local function notify(actionName, state)
     })
 end
 
--- Add Force tab with a border
-local ForceTab = Window:MakeTab({
-    Name = "Force 🔥",
+-- Function to toggle actions
+local function toggleForceAction(actionName, callback)
+    local active = forceState[actionName]
+    forceState[actionName] = not active
+    notify(actionName, not active)
+    if not active then
+        pcall(callback)
+    end
+end
+
+-- Create ForcePunch tab
+local ForcePunchTab = Window:MakeTab({
+    Name = "Force Punch 💥",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false,
     BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
 })
 
--- Function to toggle Force actions
-local function toggleForceAction(actionName, callback)
-    local active = forceState[actionName]
-    forceState[actionName] = not active
-    notify(actionName, not active)
-    callback()
-end
-
 -- Force Punch button
-ForceTab:AddButton({
-    Name = "Force Punch",
+ForcePunchTab:AddButton({
+    Name = "Activate Force Punch",
     Callback = function()
         toggleForceAction("ForcePunch", function()
             local players = game:GetService("Players")
@@ -71,118 +73,28 @@ ForceTab:AddButton({
                                 ["Request"] = "M1Down"
                             }
                         }
-                        player.Character.Network:FireServer(unpack(args))
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
                     end
                 end
-                wait(1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
--- Force Dragon Rush button
-ForceTab:AddButton({
-    Name = "Force Dragon Rush",
-    Callback = function()
-        toggleForceAction("ForceDragonRush", function()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            while forceState.ForceDragonRush do
-                for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
-                        local args = {
-                            [1] = {
-                                ["Number"] = "1",
-                                ["Request"] = "Skill"
-                            }
-                        }
-                        player.Character.Network:FireServer(unpack(args))
-                    end
-                end
-                wait(1)
-            end
-        end)
-    end
-})
-
--- Force Tiger Palm button
-ForceTab:AddButton({
-    Name = "Force Tiger Palm",
-    Callback = function()
-        toggleForceAction("ForceTigerPalm", function()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            while forceState.ForceTigerPalm do
-                for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
-                        local args = {
-                            [1] = {
-                                ["Number"] = "2",
-                                ["Request"] = "Skill"
-                            }
-                        }
-                        player.Character.Network:FireServer(unpack(args))
-                    end
-                end
-                wait(1)
-            end
-        end)
-    end
-})
-
--- Force Panther Combo button
-ForceTab:AddButton({
-    Name = "Force Panther Combo",
-    Callback = function()
-        toggleForceAction("ForcePantherCombo", function()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            while forceState.ForcePantherCombo do
-                for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
-                        local args = {
-                            [1] = {
-                                ["Number"] = "3",
-                                ["Request"] = "Skill"
-                            }
-                        }
-                        player.Character.Network:FireServer(unpack(args))
-                    end
-                end
-                wait(1)
-            end
-        end)
-    end
-})
-
--- Force Triple Kick Counter button
-ForceTab:AddButton({
-    Name = "Force Triple Kick Counter",
-    Callback = function()
-        toggleForceAction("ForceTripleKickCounter", function()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            while forceState.ForceTripleKickCounter do
-                for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
-                        local args = {
-                            [1] = {
-                                ["Number"] = "4",
-                                ["Request"] = "Skill"
-                            }
-                        }
-                        player.Character.Network:FireServer(unpack(args))
-                    end
-                end
-                wait(1)
-            end
-        end)
-    end
+-- Create ForceBlock tab
+local ForceBlockTab = Window:MakeTab({
+    Name = "Force Block 🛡️",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
 })
 
 -- Force Block button
-ForceTab:AddButton({
-    Name = "Force Block",
+ForceBlockTab:AddButton({
+    Name = "Activate Force Block",
     Callback = function()
         toggleForceAction("ForceBlock", function()
             local players = game:GetService("Players")
@@ -201,41 +113,350 @@ ForceTab:AddButton({
                                         ["Request"] = "FDown"
                                     }
                                 }
-                                targetCharacter.Network:FireServer(unpack(args))
+                                pcall(function()
+                                    targetCharacter.Network:FireServer(unpack(args))
+                                end)
                             end
                         end
                     end
                 end
-                wait(1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
--- Force Front Dash button
-ForceTab:AddButton({
-    Name = "Force Front Dash",
+-- Create ForceAwaken tab
+local ForceAwakenTab = Window:MakeTab({
+    Name = "Force Awaken 🌟",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
+
+-- Force Awaken button
+ForceAwakenTab:AddButton({
+    Name = "Activate Force Awaken",
     Callback = function()
-        toggleForceAction("ForceFrontDash", function()
+        toggleForceAction("ForceAwaken", function()
             local players = game:GetService("Players")
             local localPlayer = players.LocalPlayer
-            while forceState.ForceFrontDash do
+            while forceState.ForceAwaken do
                 for _, player in ipairs(players:GetPlayers()) do
                     if player ~= localPlayer and player.Character then
                         local args = {
                             [1] = {
-                                ["Bool"] = false,
-                                ["Request"] = "FrontDash"
+                                ["Request"] = "Awaken"
                             }
                         }
-                        player.Character.Network:FireServer(unpack(args))
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
                     end
                 end
-                wait(1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
+
+-- Create ForceSkills tab
+local ForceSkillsTab = Window:MakeTab({
+    Name = "Force Skills ⚔️",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
+
+-- Force Dragon Rush button
+ForceSkillsTab:AddButton({
+    Name = "Activate Force Dragon Rush",
+    Callback = function()
+        toggleForceAction("ForceDragonRush", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceDragonRush do
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer then
+                        local args = {
+                            [1] = {
+                                ["Number"] = "1",
+                                ["Request"] = "Skill"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Force Tiger Palm button
+ForceSkillsTab:AddButton({
+    Name = "Activate Force Tiger Palm",
+    Callback = function()
+        toggleForceAction("ForceTigerPalm", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceTigerPalm do
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer then
+                        local args = {
+                            [1] = {
+                                ["Number"] = "2",
+                                ["Request"] = "Skill"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Force Panther Combo button
+ForceSkillsTab:AddButton({
+    Name = "Activate Force Panther Combo",
+    Callback = function()
+        toggleForceAction("ForcePantherCombo", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForcePantherCombo do
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer then
+                        local args = {
+                            [1] = {
+                                ["Number"] = "3",
+                                ["Request"] = "Skill"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Force Triple Kick Counter button
+ForceSkillsTab:AddButton({
+    Name = "Activate Force Triple Kick Counter",
+    Callback = function()
+        toggleForceAction("ForceTripleKickCounter", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceTripleKickCounter do
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer then
+                        local args = {
+                            [1] = {
+                                ["Number"] = "4",
+                                ["Request"] = "Skill"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Create ForceDashes tab
+local ForceDashesTab = Window:MakeTab({
+    Name = "Force Dashes 🏃",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
+
+-- Force Right Dash button
+ForceDashesTab:AddButton({
+    Name = "Activate Force Right Dash",
+    Callback = function()
+        toggleForceAction("ForceRightDash", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceRightDash do
+                local allPlayers = players:GetPlayers()
+                for _, player in ipairs(allPlayers) do
+                    if player.Character and player.Character:FindFirstChild("Network") then
+                        local args = {
+                            [1] = {
+                                ["Request"] = "SideDashEffects",
+                                ["Direction"] = "Right"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Force Left Dash button
+ForceDashesTab:AddButton({
+    Name = "Activate Force Left Dash",
+    Callback = function()
+        toggleForceAction("ForceLeftDash", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceLeftDash do
+                local allPlayers = players:GetPlayers()
+                for _, player in ipairs(allPlayers) do
+                    if player.Character and player.Character:FindFirstChild("Network") then
+                        local args = {
+                            [1] = {
+                                ["Request"] = "SideDashEffects",
+                                ["Direction"] = "Left"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Force Forward Dash button
+ForceDashesTab:AddButton({
+    Name = "Activate Force Forward Dash",
+    Callback = function()
+        toggleForceAction("ForceForwardDash", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceForwardDash do
+                local args = {
+                    [1] = {
+                        ["Request"] = "FrontDash"
+                    }
+                }
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player.Character and player.Character:FindFirstChild("Network") then
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Force Back Dash button
+ForceDashesTab:AddButton({
+    Name = "Activate Force Back Dash",
+    Callback = function()
+        toggleForceAction("ForceBackDash", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceBackDash do
+                local allPlayers = players:GetPlayers()
+                for _, player in ipairs(allPlayers) do
+                    if player.Character and player.Character:FindFirstChild("Network") then
+                        local args = {
+                            [1] = {
+                                ["Request"] = "BackDashEffects"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Create Misc tab for additional scripts
+local MiscTab = Window:MakeTab({
+    Name = "Misc 💥",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(128, 128, 128)  -- Gray border
+})
+
+-- Add Universal Scripts label
+MiscTab:AddLabel("Universal Scripts")
+
+-- Add Inf Yield script button
+MiscTab:AddButton({
+    Name = "Load Inf Yield",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Inf-yeild-New-Version-1836"))()
+    end
+})
+
+-- Add Nameless Admin script button
+MiscTab:AddButton({
+    Name = "Load Nameless Admin",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Nameless-Admin-Official-15022"))()
+    end
+})
+
+-- Add Remote Spy script button
+MiscTab:AddButton({
+    Name = "Load Remote Spy",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Just-A-Script-Rewrite-12363"))()
+    end
+})
+
+-- Add Fly Mobile script button
+MiscTab:AddButton({
+    Name = "Load Fly Mobile",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V3-8031"))()
+    end
+})
+
+-- Create Color Changer tab
+local ColorChangerTab = Window:MakeTab({
+    Name = "Color Changer 🎨",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(0, 0, 255)  -- Blue border
+})
+
+ColorChangerTab:AddLabel("Doesn't work on mobile, only on PC")
+
+-- Add color picker
+local colorPicker = ColorChangerTab:AddColorpicker({
+    Name = "Colorpicker",
+    Default = Color3.fromRGB(255, 255, 255),  -- Default to white
+    Callback = function(Value)
+        print(Value)
+    end
+})
+
+-- Set the color picker to white initially
+colorPicker:Set(Color3.fromRGB(255, 255, 255))
 
 -- Finalize and display the GUI window
 OrionLib:Init()
