@@ -30,6 +30,9 @@ local forceState = {
     ForceBackDash = false
 }
 
+-- List of whitelisted players
+local whitelistedPlayers = {}
+
 -- Function to notify the user
 local function notify(actionName, state)
     local stateText = state and "activated" or "deactivated"
@@ -50,6 +53,16 @@ local function toggleForceAction(actionName, callback)
     end
 end
 
+-- Function to check if a player is whitelisted
+local function isWhitelisted(playerName)
+    for _, name in ipairs(whitelistedPlayers) do
+        if name == playerName then
+            return true
+        end
+    end
+    return false
+end
+
 -- Create ForcePunch tab
 local ForcePunchTab = Window:MakeTab({
     Name = "Force Punch 💥",
@@ -67,7 +80,7 @@ ForcePunchTab:AddButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForcePunch do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "M1Down"
@@ -102,7 +115,7 @@ ForceBlockTab:AddButton({
             local range = 15000
             while forceState.ForceBlock do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character and localPlayer.Character then
+                    if player ~= localPlayer and player.Character and localPlayer.Character and not isWhitelisted(player.Name) then
                         local localCharacter = localPlayer.Character
                         local targetCharacter = player.Character
                         if localCharacter:FindFirstChild("HumanoidRootPart") and targetCharacter:FindFirstChild("HumanoidRootPart") then
@@ -143,7 +156,7 @@ ForceAwakenTab:AddButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceAwaken do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "Awaken"
@@ -177,7 +190,7 @@ ForceSkillsTab:AddButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceDragonRush do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "1",
@@ -204,7 +217,7 @@ ForceSkillsTab:AddButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceTigerPalm do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "2",
@@ -231,7 +244,7 @@ ForceSkillsTab:AddButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForcePantherCombo do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "3",
@@ -258,7 +271,7 @@ ForceSkillsTab:AddButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceTripleKickCounter do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "4",
@@ -276,29 +289,27 @@ ForceSkillsTab:AddButton({
     end
 })
 
--- Create ForceDashes tab
-local ForceDashesTab = Window:MakeTab({
-    Name = "Force Dashes 🏃",
+-- Create ForceDash tab
+local ForceDashTab = Window:MakeTab({
+    Name = "Force Dash 🚀",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false,
     BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
 })
 
 -- Force Right Dash button
-ForceDashesTab:AddButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Right Dash",
     Callback = function()
         toggleForceAction("ForceRightDash", function()
             local players = game:GetService("Players")
             local localPlayer = players.LocalPlayer
             while forceState.ForceRightDash do
-                local allPlayers = players:GetPlayers()
-                for _, player in ipairs(allPlayers) do
-                    if player.Character and player.Character:FindFirstChild("Network") then
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
-                                ["Request"] = "SideDashEffects",
-                                ["Direction"] = "Right"
+                                ["Request"] = "RightDash"
                             }
                         }
                         pcall(function()
@@ -313,20 +324,18 @@ ForceDashesTab:AddButton({
 })
 
 -- Force Left Dash button
-ForceDashesTab:AddButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Left Dash",
     Callback = function()
         toggleForceAction("ForceLeftDash", function()
             local players = game:GetService("Players")
             local localPlayer = players.LocalPlayer
             while forceState.ForceLeftDash do
-                local allPlayers = players:GetPlayers()
-                for _, player in ipairs(allPlayers) do
-                    if player.Character and player.Character:FindFirstChild("Network") then
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
-                                ["Request"] = "SideDashEffects",
-                                ["Direction"] = "Left"
+                                ["Request"] = "LeftDash"
                             }
                         }
                         pcall(function()
@@ -341,45 +350,18 @@ ForceDashesTab:AddButton({
 })
 
 -- Force Forward Dash button
-ForceDashesTab:AddButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Forward Dash",
     Callback = function()
         toggleForceAction("ForceForwardDash", function()
             local players = game:GetService("Players")
             local localPlayer = players.LocalPlayer
             while forceState.ForceForwardDash do
-                local args = {
-                    [1] = {
-                        ["Request"] = "FrontDash"
-                    }
-                }
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player.Character and player.Character:FindFirstChild("Network") then
-                        pcall(function()
-                            player.Character.Network:FireServer(unpack(args))
-                        end)
-                    end
-                end
-                wait(0.1)  -- Shortened wait time to reduce load
-            end
-        end)
-    end
-})
-
--- Force Back Dash button
-ForceDashesTab:AddButton({
-    Name = "Activate Force Back Dash",
-    Callback = function()
-        toggleForceAction("ForceBackDash", function()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            while forceState.ForceBackDash do
-                local allPlayers = players:GetPlayers()
-                for _, player in ipairs(allPlayers) do
-                    if player.Character and player.Character:FindFirstChild("Network") then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
-                                ["Request"] = "BackDashEffects"
+                                ["Request"] = "ForwardDash"
                             }
                         }
                         pcall(function()
@@ -393,7 +375,84 @@ ForceDashesTab:AddButton({
     end
 })
 
--- Create Misc tab for additional scripts
+-- Force Back Dash button
+ForceDashTab:AddButton({
+    Name = "Activate Force Back Dash",
+    Callback = function()
+        toggleForceAction("ForceBackDash", function()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            while forceState.ForceBackDash do
+                for _, player in ipairs(players:GetPlayers()) do
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
+                        local args = {
+                            [1] = {
+                                ["Request"] = "BackDash"
+                            }
+                        }
+                        pcall(function()
+                            player.Character.Network:FireServer(unpack(args))
+                        end)
+                    end
+                end
+                wait(0.1)  -- Shortened wait time to reduce load
+            end
+        end)
+    end
+})
+
+-- Create Whitelist tab
+local WhitelistTab = Window:MakeTab({
+    Name = "Whitelist 👥",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
+
+-- Whitelist textbox
+WhitelistTab:AddTextbox({
+    Name = "Enter Player Name to Whitelist",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(text)
+        local playerName = text
+        if playerName and playerName ~= "" then
+            if not isWhitelisted(playerName) then
+                table.insert(whitelistedPlayers, playerName)
+                OrionLib:MakeNotification({
+                    Name = "Player Whitelisted",
+                    Content = playerName .. " has been whitelisted.",
+                    Time = 5
+                })
+            end
+        end
+    end
+})
+
+-- Unwhitelist textbox
+WhitelistTab:AddTextbox({
+    Name = "Enter Player Name to Unwhitelist",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(text)
+        local playerName = text
+        if playerName and playerName ~= "" then
+            for i, name in ipairs(whitelistedPlayers) do
+                if name == playerName then
+                    table.remove(whitelistedPlayers, i)
+                    OrionLib:MakeNotification({
+                        Name = "Player Unwhitelisted",
+                        Content = playerName .. " has been removed from the whitelist.",
+                        Time = 5
+                    })
+                    break
+                end
+            end
+        end
+    end
+})
+
+-- Create Misc tab
 local MiscTab = Window:MakeTab({
     Name = "Misc 💥",
     Icon = "rbxassetid://4483345998",
@@ -458,5 +517,5 @@ local colorPicker = ColorChangerTab:AddColorpicker({
 -- Set the color picker to white initially
 colorPicker:Set(Color3.fromRGB(255, 255, 255))
 
--- Finalize and display the GUI window
+-- Apply OrionLib settings
 OrionLib:Init()
