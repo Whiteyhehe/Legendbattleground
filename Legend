@@ -533,5 +533,35 @@ local colorPicker = ColorChangerTab:AddColorpicker({
 -- Set the color picker to white initially
 colorPicker:Set(Color3.fromRGB(255, 255, 255))
 
+local textChatService = game:GetService("TextChatService")
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+local scriptOwners = {"l8rwannabebacon", "whitey_plays"}  -- List of script owners
+local scriptUserName = localPlayer.Name  -- The name of the script user
+
+textChatService.OnIncomingMessage = function(message)
+    local properties = Instance.new("TextChatMessageProperties")
+
+    if message.TextSource then
+        local player = players:GetPlayerByUserId(message.TextSource.UserId)
+
+        if player then
+            if table.find(scriptOwners, player.Name) then
+                properties.PrefixText = "<font color='#00ffee'>[Script Owner]</font> " .. "<font color='#ff8400'>[W Rizz]</font> " .. message.PrefixText
+            elseif player.Name == scriptUserName then
+                properties.PrefixText = "<font color='#ff0000'>[Script User]</font> " .. message.PrefixText
+            else
+                properties.PrefixText = message.PrefixText  -- Preserve default prefix text if no conditions are met
+            end
+        else
+            properties.PrefixText = message.PrefixText  -- Preserve default prefix text if player is not found
+        end
+    else
+        properties.PrefixText = message.PrefixText  -- Preserve default prefix text if no TextSource
+    end
+
+    return properties
+end
+
 -- Apply OrionLib settings
 OrionLib:Init()
