@@ -10,7 +10,7 @@ local isMobile = UserInputService.TouchEnabled
 local whitelist = {
     ["whitey_plays"] = true,  -- Example username
     ["bshdgdg4"] = true,  -- Example username
-    ["benullis"] = true,  -- Add more usernames as needed
+    ["mymanuaintwinning"] = true,  -- Add more usernames as needed
     ["benullis"] = true,
     ["benullis"] = true
 }
