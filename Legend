@@ -12,7 +12,7 @@ local whitelist = {
     ["bshdgdg4"] = true,  -- Example username
     ["mymanuaintwinning"] = true,  -- Add more usernames as needed
     ["urnmomsj"] = true,
-    ["benullis"] = true
+    ["490sl"] = true
 }
 
 -- Get the local player
