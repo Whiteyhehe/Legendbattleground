@@ -11,7 +11,7 @@ local whitelist = {
     ["whitey_plays"] = true,  -- Example username
     ["bshdgdg4"] = true,  -- Example username
     ["mymanuaintwinning"] = true,  -- Add more usernames as needed
-    ["benullis"] = true,
+    ["urnmomsj"] = true,
     ["benullis"] = true
 }
 
