@@ -1,5 +1,5 @@
 -- Load external library for GUI
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
 
 -- Initialize UserInputService
 local UserInputService = game:GetService("UserInputService")
@@ -7,15 +7,13 @@ local UserInputService = game:GetService("UserInputService")
 -- Check if the platform is mobile
 local isMobile = UserInputService.TouchEnabled
 
--- Define the whitelist
 local whitelist = {
     ["erickthesad"] = true,  -- Example username
     ["bshdgdg4"] = true,  -- Example username
     ["mymanuaintwinning"] = true,  -- Add more usernames as needed
     ["g6ana"] = true,
     ["490sl"] = true,
-    ["22altLOL"] = true,
-    ["naohh61"] = true
+    ["22altLOL"] = true
 }
 
 -- Get the local player
@@ -29,30 +27,15 @@ if not whitelist[localPlayer.Name] then
 end
 
 -- Create a customizable GUI window
-local Window = Rayfield:CreateWindow({
-   Name = "Legend Battlegrounds - Made by SynosLucky",
-   LoadingTitle = "Rayfield Interface Suite",
-   LoadingSubtitle = "by Sirius",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "LegendBattlegroundsScript",
-      FileName = "Config"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink",
-      RememberJoins = true
-   },
-   KeySystem = false,
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided",
-      FileName = "Key",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"Hello"}
-   }
+local Window = OrionLib:MakeWindow({
+    Name = "Legend Battlegrounds - Made by SynosLucky",
+    HidePremium = false,
+    IntroEnabled = false,
+    IntroText = "Welcome to Legend Battlegrounds Script!",
+    SaveConfig = true,
+    ConfigFolder = "LegendBattlegroundsScript",
+    Drag = not isMobile,  -- Disable dragging on mobile devices
+    Transparency = 0.6  -- Set transparency to 60%
 })
 
 -- Track state of actions
@@ -66,14 +49,16 @@ local forceState = {
     ForceBackDash = false
 }
 
+-- List of whitelisted players
+local whitelistedPlayers = {}
+
 -- Function to notify the user
 local function notify(actionName, state)
     local stateText = state and "activated" or "deactivated"
-    Rayfield:Notify({
-        Title = actionName,
+    OrionLib:MakeNotification({
+        Name = actionName,
         Content = "Force " .. actionName .. " is now " .. stateText,
-        Duration = 5,
-        Image = 4483362458
+        Time = 5
     })
 end
 
@@ -87,11 +72,26 @@ local function toggleForceAction(actionName, callback)
     end
 end
 
+-- Function to check if a player is whitelisted
+local function isWhitelisted(playerName)
+    for _, name in ipairs(whitelistedPlayers) do
+        if name == playerName then
+            return true
+        end
+    end
+    return false
+end
+
 -- Create ForcePunch tab
-local ForcePunchTab = Window:CreateTab("Force Punch 💥", 4483362458)
+local ForcePunchTab = Window:MakeTab({
+    Name = "Force Punch 💥",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
 
 -- Force Punch button
-ForcePunchTab:CreateButton({
+ForcePunchTab:AddButton({
     Name = "Activate Force Punch",
     Callback = function()
         toggleForceAction("ForcePunch", function()
@@ -99,7 +99,7 @@ ForcePunchTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForcePunch do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "M1Down"
@@ -110,17 +110,22 @@ ForcePunchTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Create ForceBlock tab
-local ForceBlockTab = Window:CreateTab("Force Block 🛡️", 4483362458)
+local ForceBlockTab = Window:MakeTab({
+    Name = "Force Block 🛡️",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
 
 -- Force Block button
-ForceBlockTab:CreateButton({
+ForceBlockTab:AddButton({
     Name = "Activate Force Block",
     Callback = function()
         toggleForceAction("ForceBlock", function()
@@ -129,7 +134,7 @@ ForceBlockTab:CreateButton({
             local range = 15000
             while forceState.ForceBlock do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character and localPlayer.Character and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and localPlayer.Character and not isWhitelisted(player.Name) then
                         local localCharacter = localPlayer.Character
                         local targetCharacter = player.Character
                         if localCharacter:FindFirstChild("HumanoidRootPart") and targetCharacter:FindFirstChild("HumanoidRootPart") then
@@ -147,17 +152,24 @@ ForceBlockTab:CreateButton({
                         end
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Create ForceAwaken tab
-local ForceAwakenTab = Window:CreateTab("Force Awaken 🌟", 4483362458)
+local ForceAwakenTab = Window:MakeTab({
+    Name = "Force Awaken 🌟",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
+
+ForceAwakenTab:AddLabel("only forces players that has full awaken")
 
 -- Force Awaken button
-ForceAwakenTab:CreateButton({
+ForceAwakenTab:AddButton({
     Name = "Activate Force Awaken",
     Callback = function()
         toggleForceAction("ForceAwaken", function()
@@ -165,7 +177,7 @@ ForceAwakenTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceAwaken do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "Awaken"
@@ -176,17 +188,22 @@ ForceAwakenTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Create ForceSkills tab
-local ForceSkillsTab = Window:CreateTab("Force Skills ⚔️", 4483362458)
+local ForceSkillsTab = Window:MakeTab({
+    Name = "Force Skills ⚔️",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
 
 -- Force Dragon Rush button
-ForceSkillsTab:CreateButton({
+ForceSkillsTab:AddButton({
     Name = "Activate Force Dragon Rush",
     Callback = function()
         toggleForceAction("ForceDragonRush", function()
@@ -194,7 +211,7 @@ ForceSkillsTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceDragonRush do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "1",
@@ -206,14 +223,14 @@ ForceSkillsTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Force Tiger Palm button
-ForceSkillsTab:CreateButton({
+ForceSkillsTab:AddButton({
     Name = "Activate Force Tiger Palm",
     Callback = function()
         toggleForceAction("ForceTigerPalm", function()
@@ -221,7 +238,7 @@ ForceSkillsTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceTigerPalm do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "2",
@@ -233,14 +250,14 @@ ForceSkillsTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Force Panther Combo button
-ForceSkillsTab:CreateButton({
+ForceSkillsTab:AddButton({
     Name = "Activate Force Panther Combo",
     Callback = function()
         toggleForceAction("ForcePantherCombo", function()
@@ -248,7 +265,7 @@ ForceSkillsTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForcePantherCombo do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "3",
@@ -260,14 +277,14 @@ ForceSkillsTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Force Triple Kick Counter button
-ForceSkillsTab:CreateButton({
+ForceSkillsTab:AddButton({
     Name = "Activate Force Triple Kick Counter",
     Callback = function()
         toggleForceAction("ForceTripleKickCounter", function()
@@ -275,7 +292,7 @@ ForceSkillsTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceTripleKickCounter do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Number"] = "4",
@@ -287,17 +304,22 @@ ForceSkillsTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Create ForceDash tab
-local ForceDashTab = Window:CreateTab("Force Dash 🚀", 4483362458)
+local ForceDashTab = Window:MakeTab({
+    Name = "Force Dash 🚀",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
+})
 
 -- Force Right Dash button
-ForceDashTab:CreateButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Right Dash",
     Callback = function()
         toggleForceAction("ForceRightDash", function()
@@ -305,7 +327,7 @@ ForceDashTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceRightDash do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "RightDash"
@@ -316,14 +338,14 @@ ForceDashTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Force Left Dash button
-ForceDashTab:CreateButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Left Dash",
     Callback = function()
         toggleForceAction("ForceLeftDash", function()
@@ -331,7 +353,7 @@ ForceDashTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceLeftDash do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "LeftDash"
@@ -342,14 +364,14 @@ ForceDashTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Force Forward Dash button
-ForceDashTab:CreateButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Forward Dash",
     Callback = function()
         toggleForceAction("ForceForwardDash", function()
@@ -357,7 +379,7 @@ ForceDashTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceForwardDash do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "ForwardDash"
@@ -368,14 +390,14 @@ ForceDashTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
 -- Force Back Dash button
-ForceDashTab:CreateButton({
+ForceDashTab:AddButton({
     Name = "Activate Force Back Dash",
     Callback = function()
         toggleForceAction("ForceBackDash", function()
@@ -383,7 +405,7 @@ ForceDashTab:CreateButton({
             local localPlayer = players.LocalPlayer
             while forceState.ForceBackDash do
                 for _, player in ipairs(players:GetPlayers()) do
-                    if player ~= localPlayer and not whitelist[player.Name] then
+                    if player ~= localPlayer and player.Character and not isWhitelisted(player.Name) then
                         local args = {
                             [1] = {
                                 ["Request"] = "BackDash"
@@ -394,53 +416,34 @@ ForceDashTab:CreateButton({
                         end)
                     end
                 end
-                wait(0.1)
+                wait(0.1)  -- Shortened wait time to reduce load
             end
         end)
     end
 })
 
--- Create Misc tab
-local MiscTab = Window:CreateTab("Miscellaneous 🔧", 4483362458)
-
--- Infinite Jump toggle
-MiscTab:CreateToggle({
-    Name = "Infinite Jump",
-    CurrentValue = false,
-    Flag = "InfiniteJump", -- Unique flag for configuration
-    Callback = function(value)
-        if value then
-            local userInputService = game:GetService("UserInputService")
-            userInputService.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
-                    local character = Players.LocalPlayer.Character
-                    if character and character:FindFirstChild("Humanoid") then
-                        character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                        character.Humanoid:Move(Vector3.new(0, 10, 0))
-                    end
-                end
-            end)
-        end
-    end
+-- Create Whitelist tab
+local WhitelistTab = Window:MakeTab({
+    Name = "Whitelist 👥",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(255, 0, 0)  -- Red border
 })
 
-local WhitelistTab = Window:CreateTab("Whitelist 👥", 4483345998)
-
 -- Whitelist textbox
-WhitelistTab:CreateTextbox({
+WhitelistTab:AddTextbox({
     Name = "Enter Player Name to Whitelist",
     Default = "",
     TextDisappear = true,
     Callback = function(text)
         local playerName = text
         if playerName and playerName ~= "" then
-            if not whitelist[playerName] then
-                whitelist[playerName] = true
-                Rayfield:Notify({
-                    Title = "Player Whitelisted",
+            if not isWhitelisted(playerName) then
+                table.insert(whitelistedPlayers, playerName)
+                OrionLib:MakeNotification({
+                    Name = "Player Whitelisted",
                     Content = playerName .. " has been whitelisted.",
-                    Duration = 5,
-                    Image = 4483362458
+                    Time = 5
                 })
             end
         end
@@ -448,34 +451,41 @@ WhitelistTab:CreateTextbox({
 })
 
 -- Unwhitelist textbox
-WhitelistTab:CreateTextbox({
+WhitelistTab:AddTextbox({
     Name = "Enter Player Name to Unwhitelist",
     Default = "",
     TextDisappear = true,
     Callback = function(text)
         local playerName = text
         if playerName and playerName ~= "" then
-            if whitelist[playerName] then
-                whitelist[playerName] = nil
-                Rayfield:Notify({
-                    Title = "Player Unwhitelisted",
-                    Content = playerName .. " has been removed from the whitelist.",
-                    Duration = 5,
-                    Image = 4483362458
-                })
+            for i, name in ipairs(whitelistedPlayers) do
+                if name == playerName then
+                    table.remove(whitelistedPlayers, i)
+                    OrionLib:MakeNotification({
+                        Name = "Player Unwhitelisted",
+                        Content = playerName .. " has been removed from the whitelist.",
+                        Time = 5
+                    })
+                    break
+                end
             end
         end
     end
 })
 
 -- Create Misc tab
-local MiscTab = Window:CreateTab("Misc 💥", 4483345998)
+local MiscTab = Window:MakeTab({
+    Name = "Misc 💥",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(128, 128, 128)  -- Gray border
+})
 
 -- Add Universal Scripts label
-MiscTab:CreateLabel("Universal Scripts")
+MiscTab:AddLabel("Universal Scripts")
 
 -- Add Inf Yield script button
-MiscTab:CreateButton({
+MiscTab:AddButton({
     Name = "Load Inf Yield",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Inf-yeild-New-Version-1836"))()
@@ -483,7 +493,7 @@ MiscTab:CreateButton({
 })
 
 -- Add Nameless Admin script button
-MiscTab:CreateButton({
+MiscTab:AddButton({
     Name = "Load Nameless Admin",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Nameless-Admin-Official-15022"))()
@@ -491,7 +501,7 @@ MiscTab:CreateButton({
 })
 
 -- Add Remote Spy script button
-MiscTab:CreateButton({
+MiscTab:AddButton({
     Name = "Load Remote Spy",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Just-A-Script-Rewrite-12363"))()
@@ -499,7 +509,7 @@ MiscTab:CreateButton({
 })
 
 -- Add Fly Mobile script button
-MiscTab:CreateButton({
+MiscTab:AddButton({
     Name = "Load Fly Mobile",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FLY-GUI-V3-8031"))()
@@ -507,12 +517,17 @@ MiscTab:CreateButton({
 })
 
 -- Create Color Changer tab
-local ColorChangerTab = Window:CreateTab("Color Changer 🎨", 4483345998)
+local ColorChangerTab = Window:MakeTab({
+    Name = "Color Changer 🎨",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false,
+    BorderColor = Color3.fromRGB(0, 0, 255)  -- Blue border
+})
 
-ColorChangerTab:CreateLabel("Doesn't work on mobile, only on PC")
+ColorChangerTab:AddLabel("Doesn't work on mobile, only on PC")
 
 -- Add color picker
-local colorPicker = ColorChangerTab:CreateColorpicker({
+local colorPicker = ColorChangerTab:AddColorpicker({
     Name = "Colorpicker",
     Default = Color3.fromRGB(255, 255, 255),  -- Default to white
     Callback = function(Value)
@@ -523,8 +538,9 @@ local colorPicker = ColorChangerTab:CreateColorpicker({
 -- Set the color picker to white initially
 colorPicker:Set(Color3.fromRGB(255, 255, 255))
 
--- Customize chat message formatting
 local textChatService = game:GetService("TextChatService")
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
 local scriptOwners = {"l8rwannabebacon", "whitey_plays"}  -- List of script owners
 local scriptUserName = localPlayer.Name  -- The name of the script user
 
@@ -532,7 +548,7 @@ textChatService.OnIncomingMessage = function(message)
     local properties = Instance.new("TextChatMessageProperties")
 
     if message.TextSource then
-        local player = Players:GetPlayerByUserId(message.TextSource.UserId)
+        local player = players:GetPlayerByUserId(message.TextSource.UserId)
 
         if player then
             if table.find(scriptOwners, player.Name) then
@@ -551,3 +567,6 @@ textChatService.OnIncomingMessage = function(message)
 
     return properties
 end
+
+-- Apply OrionLib settings
+OrionLib:Init()
