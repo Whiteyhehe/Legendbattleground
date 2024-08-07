@@ -14,7 +14,7 @@ local whitelist = {
     ["g6ana"] = true,
     ["490sl"] = true,
     ["22altLOL"] = true,
-    [FreeMjay7"] = true
+    ["FreeMjay7"] = true
 }
 
 -- Get the local player
