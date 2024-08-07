@@ -13,7 +13,8 @@ local whitelist = {
     ["naohh61"] = true,  -- Add more usernames as needed
     ["g6ana"] = true,
     ["490sl"] = true,
-    ["22altLOL"] = true
+    ["22altLOL"] = true,
+    [FreeMjay7"] = true
 }
 
 -- Get the local player
